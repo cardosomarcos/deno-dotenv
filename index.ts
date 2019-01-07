@@ -1,4 +1,4 @@
-import { readFile, env } from "deno";
+import { env, readFileSync } from "deno";
 
 interface Variables {
   [name: string]: string;
@@ -7,6 +7,13 @@ interface Variables {
 const LINE_BREAK = /\r\n|\n|\r/;
 const DECLARATION = /^\s*(\w+)\s*\=\s*(.*)?\s*$/;
 
+/**
+ * Parse the source of a `.env` file into an object with the variables.
+ * @example
+ * parse('NAME = "Hari Seldon"\nNICK=Seldon');
+ * //=> { NAME: 'Hari Seldon', NICK: 'Seldon' }
+ * @param source - Source of a `.env` file.
+ */
 export function parse (source: string): Variables {
   const lines = source.split(LINE_BREAK);
 
@@ -29,8 +36,15 @@ export function parse (source: string): Variables {
 
 const decoder = new TextDecoder("utf-8");
 
-export default async function dotenv (): Promise<Variables> {
-  const file = await readFile(".env");
+/**
+ * Read `.env` file from project's root. Merge it's variables with environment
+ * ones and return it.
+ * @example
+ * const env = dotenv();
+ * db.connect(env.DB_USERNAME, env.DB_PASSWORD);
+ */
+export default function dotenv (): Variables {
+  const file = readFileSync(".env");
   const vars = parse(decoder.decode(file));
   return Object.assign(env(), vars);
 }
