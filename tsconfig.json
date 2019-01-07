@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "paths": {
+      "deno": [
+        "../../.deno/deno.d.ts"
+      ],
+      "http://*": [
+        "../../.deno/deps/http/*"
+      ],
+      "https://*": [
+        "../../.deno/deps/https/*"
+      ]
+    }
+  }
+}
