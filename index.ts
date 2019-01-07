@@ -1,22 +1,50 @@
-import { readFile, env } from "deno";
+import { env, readFileSync } from "deno";
 
-interface Variables { [name: string]: any; }
+interface Variables {
+  [name: string]: string;
+}
+
+const LINE_BREAK = /\r\n|\n|\r/;
+const DECLARATION = /^\s*(\w+)\s*\=\s*(.*)?\s*$/;
+
+/**
+ * Parse the source of a `.env` file into an object with the variables.
+ * @example
+ * parse('NAME = "Hari Seldon"\nNICK=Seldon');
+ * //=> { NAME: 'Hari Seldon', NICK: 'Seldon' }
+ * @param source - Source of a `.env` file.
+ */
+export function parse (source: string): Variables {
+  const lines = source.split(LINE_BREAK);
+
+  return lines.reduce((vars: Variables, line: string) => {
+    if (!DECLARATION.test(line))
+      return vars;
+
+    const [ , name, value ] = DECLARATION.exec(line)!;
+
+    if (!value)
+      vars[name] = "";
+    else if (/^".*"$/.test(value))
+      vars[name] = value.replace(/\\n/g, "\n").replace(/^\"(.*)\"$/, "$1");
+    else
+      vars[name] = value;
+
+    return vars;
+  }, {} as Variables);
+}
 
 const decoder = new TextDecoder("utf-8");
-const LINE_BREAK = /\r\n|\n|\r/;
-const ASIGNMENT = /(\w+)\ *\=\ *(.*)/
 
-export default async function dotenv<T extends Variables>(): Promise<T> {
-  const environment = env();
-  const data = await readFile(".env");
-  const content = decoder.decode(data);
-  const dotenv = content.split(LINE_BREAK).reduce((variables: T, line: string) => {
-    if (!ASIGNMENT.test(line))
-      return variables;
-
-    const [_, name, value] = ASIGNMENT.exec(line);
-    return { ...variables, [name]: JSON.parse(value) };
-  }, {} as T);
-
-  return Object.assign(environment, dotenv);
+/**
+ * Read `.env` file from project's root. Merge it's variables with environment
+ * ones and return it.
+ * @example
+ * const env = dotenv();
+ * db.connect(env.DB_USERNAME, env.DB_PASSWORD);
+ */
+export default function dotenv (): Variables {
+  const file = readFileSync(".env");
+  const vars = parse(decoder.decode(file));
+  return Object.assign(env(), vars);
 }
