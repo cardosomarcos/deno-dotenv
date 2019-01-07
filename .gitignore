@@ -3,3 +3,6 @@
 
 # Finder's configuration files (Mac).
 .DS_Store
+
+# Deno generated type declarations.
+deno.d.ts
