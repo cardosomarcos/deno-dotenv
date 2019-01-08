@@ -1,5 +1,7 @@
 # deno-dotenv
 
+[![Build Status](https://travis-ci.org/VitorLuizC/deno-dotenv.svg?branch=master)](https://travis-ci.org/VitorLuizC/deno-dotenv)
+
 ## Usage
 
 ```ts
