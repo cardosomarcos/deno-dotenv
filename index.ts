@@ -26,7 +26,7 @@ export function parse (source: string): Variables {
     if (!value)
       vars[name] = "";
     else if (/^".*"$/.test(value))
-      vars[name] = value.replace(/\\n/g, "\n").replace(/^\"(.*)\"$/, "$1");
+      vars[name] = value.replace(/^\"(.*)\"$/, "$1").replace(/\\n/g, "\n");
     else
       vars[name] = value;
 
