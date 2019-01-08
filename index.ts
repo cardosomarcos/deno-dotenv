@@ -1,6 +1,9 @@
 import { env, readFileSync } from "deno";
 
-interface Variables {
+/**
+ * Variables defined on .env file or environment.
+ */
+export interface DotenvVariables {
   [name: string]: string;
 }
 
@@ -14,10 +17,10 @@ const DECLARATION = /^\s*(\w+)\s*\=\s*(.*)?\s*$/;
  * //=> { NAME: 'Hari Seldon', NICK: 'Seldon' }
  * @param source - Source of a `.env` file.
  */
-export function parse (source: string): Variables {
+export function parse (source: string): DotenvVariables {
   const lines = source.split(LINE_BREAK);
 
-  return lines.reduce((vars: Variables, line: string) => {
+  return lines.reduce((vars: DotenvVariables, line: string) => {
     if (!DECLARATION.test(line))
       return vars;
 
@@ -31,10 +34,17 @@ export function parse (source: string): Variables {
       vars[name] = value;
 
     return vars;
-  }, {} as Variables);
+  }, {} as DotenvVariables);
 }
 
 const decoder = new TextDecoder("utf-8");
+
+/**
+ * Options to change dotenv's default behavior. Like change .env file path.
+ */
+export interface DotenvOptions {
+  path?: string;
+}
 
 /**
  * Read `.env` file from project's root. Merge it's variables with environment
@@ -43,8 +53,8 @@ const decoder = new TextDecoder("utf-8");
  * const env = dotenv();
  * db.connect(env.DB_USERNAME, env.DB_PASSWORD);
  */
-export default function dotenv (): Variables {
-  const file = readFileSync(".env");
+export default function dotenv ({ path = '.env' }: DotenvOptions = {}): DotenvVariables {
+  const file = readFileSync(path);
   const vars = parse(decoder.decode(file));
   return Object.assign(env(), vars);
 }

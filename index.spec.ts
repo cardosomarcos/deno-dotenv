@@ -22,12 +22,11 @@ test({
   }
 });
 
-
-function dotenvFrom (content?: string): { [name: string]: string } {
+function dotenvFrom (content?: string, path?: string): { [name: string]: string } {
   const encoder = new TextEncoder();
-  writeFileSync(".env", encoder.encode(content));
-  const vars = dotenv();
-  removeSync(".env");
+  writeFileSync(path || '.env', encoder.encode(content));
+  const vars = dotenv({ path });
+  removeSync(path || '.env');
   return vars;
 }
 
@@ -128,7 +127,7 @@ test({
       D6 = \\n
       E6 = "\\n"
       F6 = "
-      F7 = { "name": "Hari Seldon" }
+      G6 = { "name": "Hari Seldon" }
     `);
     equal(vars.A6, '\nA\nE\nI');
     equal(vars.B6, '');
@@ -136,6 +135,25 @@ test({
     equal(vars.D6, '\\n');
     equal(vars.E6, '\n');
     equal(vars.F6, '"');
-    equal(vars.F7, '{ "name": "Hari Seldon" }');
+    equal(vars.G6, '{ "name": "Hari Seldon" }');
+  }
+});
+
+test({
+  name: "[dotenv's path option]: Change .env file path.",
+  fn () {
+    let vars;
+
+    vars = dotenvFrom('A7 = A');
+    equal(vars.A7, 'A');
+
+    vars = dotenv({ path: './B/.env' });
+    equal(vars.A7, 'B');
+
+    vars = dotenv({ path: 'B/C/.env' });
+    equal(vars.A7, 'C');
+
+    vars = dotenvFrom('A7 = D', 'OTHER_FILENAME.txt');
+    equal(vars.A7, 'D');
   }
 });
