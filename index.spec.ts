@@ -1,7 +1,7 @@
 import { removeSync, writeFileSync, env } from "deno";
 
 // @ts-ignore
-import dotenv, { parse } from "../index.ts";
+import dotenv, { parse } from "index.ts";
 
 // @ts-ignore
 import { test, assertEqual as equal } from "https://deno.land/x/testing/mod.ts";

@@ -6,4 +6,4 @@ install:
 
 script:
   - make setup
-  - make test -B
+  - make test
