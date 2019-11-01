@@ -8,7 +8,7 @@ import { test, assertEqual as equal } from "https://deno.land/x/testing/mod.ts";
 
 test({
   name: "[API consistence]: Module default exports dotenv function",
-  fn () {
+  fn() {
     equal(typeof dotenv, "function");
     equal(dotenv.name, "dotenv");
   }
@@ -16,13 +16,13 @@ test({
 
 test({
   name: "[API consistence]: Module named exports parse function",
-  fn () {
+  fn() {
     equal(typeof parse, "function");
     equal(parse.name, "parse");
   }
 });
 
-function dotenvFrom (content?: string, path?: string): { [name: string]: string } {
+function dotenvFrom(content?: string, path?: string): { [name: string]: string } {
   const encoder = new TextEncoder();
   writeFileSync(path || '.env', encoder.encode(content));
   const vars = dotenv({ path });
@@ -32,7 +32,7 @@ function dotenvFrom (content?: string, path?: string): { [name: string]: string 
 
 test({
   name: "[dotenv function]: Read .env, parse to vars and return it",
-  fn () {
+  fn() {
     const value = "Hari Seldon";
     const vars = dotenvFrom(`A1 = "${value}"`);
     equal(vars.A1, value);
@@ -41,7 +41,7 @@ test({
 
 test({
   name: "[dotenv function]: .env vars overwrites environment variables",
-  fn () {
+  fn() {
     let vars;
     const valueA = "Hari Seldon";
     const valueB = "Stor Gendibal";
@@ -66,7 +66,7 @@ test({
 
 test({
   name: "[dotenv function]: Merges .env vars with environment ones",
-  fn () {
+  fn() {
     let vars;
     const valueA = "Hari Seldon";
     const valueB = "Stor Gendibal";
@@ -85,7 +85,7 @@ test({
 
 test({
   name: "[parse function]: Resolve spaces between var, equals symbol and value",
-  fn () {
+  fn() {
     const value = "Hari Seldon";
     const vars = parse(`
       A4   =  ${value}
@@ -100,7 +100,7 @@ test({
 
 test({
   name: "[parse function]: Reads only one var per line",
-  fn () {
+  fn() {
     const value = "Hari Seldon";
     const vars = parse(`
       A5 = "${value}"; B5 = "${value}"
@@ -119,7 +119,7 @@ test({
 
 test({
   name: "[parse function]: Parses \\n, empty values as empty string and double quotes",
-  fn () {
+  fn() {
     const vars = parse(`
       A6 = "\\nA\\nE\\nI"
       B6 =
@@ -141,7 +141,7 @@ test({
 
 test({
   name: "[dotenv's path option]: Change .env file path.",
-  fn () {
+  fn() {
     let vars;
 
     vars = dotenvFrom('A7 = A');
